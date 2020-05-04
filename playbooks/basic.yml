@@ -14,3 +14,4 @@
   tasks:
    -name: Run Server
     apt: name=nginx state=installed
+#Here, we can see that we have two play in playbook. It means whenever we will start from host, it means it is a new play.
