@@ -1,0 +1,56 @@
+/*ANSIBLE PLAYBOOK FOR MYSQL-SERVER ON RHEL7:
+
+1. Create two server one Ansible Server and other mysql server and perform the following    commands on both server.
+
+   service firewalld stop
+   systemctl disable firewalld (for parmanently disabling firewall)
+   service firewalld status
+   service iptables stop
+   service iptables status
+   cd /etc/selinux/config
+   Set the line SELINUX=enforcing to SELINUX=disabled
+   reboot (both server)
+   
+2. Logged in Ansible server and generate public key.
+   cd /etc/ansible/hosts 
+   #paste the IP  of mysql server, add the user and save the file. Please find the example.
+   #3.95.194.223 ansible_user = ec2-user
+   cd ~/.ssh
+   ssh-keygen
+   ls
+   cat id_rsa.pub (copy the public key)
+3. Logged in mysql server and paste the public key in authorized key file.
+   cd ~/.sh
+   vi authorized_key (paste the piblic key)
+4. To test ssh run the command
+   ansible all -m ping -u ec2-user
+5. Logged in ansible server
+   create a file mysql.yml and paste this code.*/
+
+---   
+  name: Install mysql client
+  hosts: 3.94.105.223
+ # connection: local
+  become: yes
+  become_method: sudo
+
+  tasks:
+    - name: Install Wget
+      yum: name=wget state=installed
+    - name: Create directory
+      file:
+        path: /usr/mysql
+        state: directory
+    - name: Download Lib
+      get_url:
+        url: http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
+        dest: /usr/mysql/mysql-community-release-el7-5.noarch.rpm
+    - name: Install rpm
+      yum: name=/usr/mysql/mysql-community-release-el7-5.noarch.rpm state=present                                                                                 
+    - name: Install python
+      yum: name=python3 state=installed
+    - name: Install mysql
+      yum: name=mysql-server state=installed
+    - name: Start Sql server
+      service: name=mysqld state=restarted
+  
