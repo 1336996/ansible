@@ -1,0 +1,32 @@
+- hosts: all
+  name: Install Lamp Stack
+  sudo: yes
+  tasks:
+   - name: Install Htppd
+     yum: name=httpd state=installed
+     notify: Restart httpd
+   - name: Install php
+     yum: name=php  state=installed
+   - name: Install php
+     yum: name=php-mysql  state=installed
+   - name: Install php-cli
+     yum: name=php-cli  state=installed
+   - name: Install php-gd
+     yum: name=php-gd  state=installed
+   - name: Install Wget
+     yum: name=wget state=installed
+   - name: Create directory
+     file:
+       path: /usr/mysql
+       state: directory
+   - name: Download Lib
+     get_url:
+       url: http://repo.mysql.com/mysql-community-release-el7-5.noarch.rpm
+       dest: /usr/mysql/mysql-community-release-el7-5.noarch.rpm
+   - name: Install rpm
+     yum: name=/usr/mysql/mysql-community-release-el7-5.noarch.rpm state=present
+  handlers:
+   - name: Restart httpd
+     service:
+        name: httpd
+        state: restarted
